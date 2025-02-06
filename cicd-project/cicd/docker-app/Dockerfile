@@ -1,10 +1,12 @@
-FROM nginx:latest
+FROM openjdk:17-jre-slim
 
-# Copy custom static content to the NGINX html directory
-COPY index.html /usr/share/nginx/html/
+# Set the working directory in the container
+WORKDIR /app
 
-# Expose port 80 to the container
-EXPOSE 80
+# Copy the JAR file into the Docker image
+COPY *.jar /app/ #your-artifact.jar
 
-# Run NGINX in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 8080
+
+# Run the JAR file as the main command
+CMD ["java", "-Dserver.port=8080", "-jar", "/app/your-artifact.jar"]

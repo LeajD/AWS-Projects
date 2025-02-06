@@ -11,6 +11,10 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+        # Get the artifact (Java JAR file) from the S3 bucket
+      - echo "Downloading JAR file from S3"
+      - aws s3 cp s3://my-codebuild-javaartifacts-bucket/target/*.jar ./
+
   build:
     commands:
       - echo Building the Docker image...
