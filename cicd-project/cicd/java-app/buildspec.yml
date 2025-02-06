@@ -1,5 +1,12 @@
 version: 0.2
 
+env:
+  variables:
+    MAVEN_VERSION_CLI_OPTS: "--batch-mode    --errors   --fail-at-end   --show-version   --no-transfer-progress   -DinstallAtEnd=true   -DdeployAtEnd=true   -Dmaven.deploy.skip=false"
+    SONAR_PROJECT_KEY: "value"
+    SONAR_SERVER_URL: "value"
+    SONAR_TOKEN: "value"
+
 phases:
   install:
     runtime-versions:
@@ -11,6 +18,10 @@ phases:
     commands:
       - echo Validating Maven version...
       - mvn --version
+      - echo Running sonarqube scanning ...
+      #- mvn $MAVEN_VERSION_CLI_OPTS sonar:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+      #  -Dsonar.host.url=$SONAR_SERVER_URL \
+      #  -Dsonar.login=$SONAR_TOKEN
   build:
     commands:
       - echo Building the Maven project...
