@@ -1,0 +1,28 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_ACCOUNT_ID: "123456789012"  # Replace with your AWS account ID
+    AWS_REGION: "us-east-1"         # Replace with your region
+    REPO_NAME: "my-docker-repo"      # Replace with your ECR repository name
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t $REPO_NAME .
+      - docker tag $REPO_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:latest
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:latest
+      - echo Generating imagedefinitions.json...
+      - printf '[{"name": "%s", "imageUri": "%s.dkr.ecr.%s.amazonaws.com/%s:latest"}]' "$REPO_NAME" "$AWS_ACCOUNT_ID" "$AWS_REGION" "$REPO_NAME" > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
