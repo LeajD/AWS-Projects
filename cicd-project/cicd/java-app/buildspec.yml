@@ -6,7 +6,7 @@ phases:
       java: corretto17  # use your desired Java version
     commands:
       - echo Installing Maven...
-      - apt-get update -y && apt-get install -y maven
+      - apt-get update -y #&& apt-get install -y maven
   pre_build:
     commands:
       - echo Validating Maven version...
