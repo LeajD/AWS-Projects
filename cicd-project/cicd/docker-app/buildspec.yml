@@ -25,7 +25,7 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:latest
       - echo Generating imagedefinitions.json...
-      - printf '[{"name": "%s", "imageUri": "%s.dkr.ecr.%s.amazonaws.com/%s:latest"}]" "$REPO_NAME" "$AWS_ACCOUNT_ID" "$AWS_REGION" "$REPO_NAME" > imagedefinitions.json
+      - echo '[{"name":"'$REPO_NAME'","imageUri":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com'/'$REPO_NAME':latest"}]' > imagedefinitions.json
 artifacts:
   files:
     - imagedefinitions.json
