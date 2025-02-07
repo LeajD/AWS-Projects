@@ -1,4 +1,5 @@
-FROM amazoncorretto:17.0.14
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:17-al2-native-jdk
+#amazoncorretto:17.0.14
 
 # Set the working directory in the container
 WORKDIR /app
