@@ -10,6 +10,7 @@ env:
     CODEARTIFACT_REPO: "maven-repo-artifact"
     ARTIFACT_NAME: "custom-java-app"
     #ARTIFACT_VERSION:  
+    DOCKER_IMAGE_VERSION: "green"
 phases:
   pre_build:
     commands:
@@ -32,14 +33,14 @@ phases:
       - cd cicd-project/cicd/docker-app/
       - echo Building the Docker image...
       - docker build -t $REPO_NAME .
-      - docker tag $REPO_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:latest
+      - docker tag $REPO_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:$DOCKER_IMAGE_VERSION
   post_build:
     commands:
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:$DOCKER_IMAGE_VERSION
       - cd $CODEBUILD_SRC_DIR
       - echo Generating imagedefinitions.json...
-      - echo '[{"name":"'$REPO_NAME'","imageUri":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com'/'$REPO_NAME':latest"}]' > imagedefinitions.json
+      - echo '[{"name":"'$REPO_NAME'","imageUri":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com'/'$REPO_NAME':$DOCKER_IMAGE_VERSION"}]' > imagedefinitions.json
       - ls && find / -name *imagedefinitions* && echo "catting" && cat imagedefinitions.json
       #- cp $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/imagedefinitions.json /imagedefinitions.json
 artifacts:
