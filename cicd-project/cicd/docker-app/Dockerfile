@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM amazoncorretto:17.0.14
 
 # Set the working directory in the container
 WORKDIR /app
