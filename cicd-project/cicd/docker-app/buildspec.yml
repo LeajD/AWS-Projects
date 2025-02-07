@@ -20,7 +20,7 @@ phases:
       - echo Logging in to AWS CodeArtifact...
       - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain test-java-maven-artifact --domain-owner 703671893205 --region us-east-1 --query authorizationToken --output text`
       - echo "Downloading JAR from CodeArtifact"
-      - mvn -B dependency:get -DrepoUrl=https://test-java-maven-artifact-703671893205.d.codeartifact.us-east-1.amazonaws.com/maven/maven-repo-artifact/ -Dartifact=com.example:$ARTIFACT_NAME:1.0-SNAPSHOT # Replace with your artifact
+      - mvn -B dependency:get --settings settings.xml -DrepoUrl=https://test-java-maven-artifact-703671893205.d.codeartifact.us-east-1.amazonaws.com/maven/maven-repo-artifact/ -Dartifact=com.example:$ARTIFACT_NAME:1.0-SNAPSHOT # Replace with your artifact
 
   build:
     commands:
