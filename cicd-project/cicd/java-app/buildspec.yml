@@ -26,7 +26,7 @@ phases:
   build:
     commands:
       - echo Building the Maven project...
-      - ls && pwd
+      - ls && pwd && ls cicd-project
       - cd $CODEBUILD_SRC_DIR/cicd-project/cicd/java-app/
       - mvn clean package --settings settings.xml
   post_build:
