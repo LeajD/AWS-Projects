@@ -23,8 +23,9 @@ phases:
       - echo "listing..." && ls -ltra
       - mvn -B -Dmaven.repo.local=./ dependency:get --settings cicd-project/cicd/docker-app/settings.xml -DrepoUrl=https://test-java-maven-artifact-703671893205.d.codeartifact.us-east-1.amazonaws.com/maven/maven-repo-artifact/ -Dartifact=com.example:$ARTIFACT_NAME:1.0-SNAPSHOT -DoutputDirectory=$CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/ # Replace with your artifact
       - echo "listing-after-mvn..." && ls -ltra
-      - echo 'running find command' && find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app 
-      - cp /codebuild/output/src477026942/src/com/example/custom-java-app/1.0-SNAPSHOT/custom-java-app-1.0-SNAPSHOT.jar  $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/java-artifact.jar
+      - echo 'running find command' && find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app | head -n 1
+#      - cp /codebuild/output/src477026942/src/com/example/custom-java-app/1.0-SNAPSHOT/custom-java-app-1.0-SNAPSHOT.jar  $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/java-artifact.jar
+      - cp $(find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app | head -n 1)  $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/java-artifact.jar
   build:
     commands:
       - cd cicd-project/cicd/docker-app/
