@@ -40,6 +40,7 @@ phases:
       - echo Generating imagedefinitions.json...
       - echo '[{"name":"'$REPO_NAME'","imageUri":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com'/'$REPO_NAME':latest"}]' > imagedefinitions.json
       - ls && find / -name *imagedefinitions* && echo "catting" && cat imagedefinitions.json
+      - cp $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/imagedefinitions.json /imagedefinitions.json
 artifacts:
   files:
-    - /codebuild/output/src3028065180/src/cicd-project/cicd/docker-app/imagedefinitions.json
+    - /imagedefinitions.json
