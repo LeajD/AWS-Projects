@@ -22,5 +22,7 @@ FROM public.ecr.aws/nginx/nginx:1.26
 # Expose port 80 for HTTP traffic.
 EXPOSE 80
 
+COPY java-artifact.jar /app/java-artifact.jar
+
 # Start Nginx in the foreground.
 CMD ["nginx", "-g", "daemon off;"]
