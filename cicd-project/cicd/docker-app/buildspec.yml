@@ -21,9 +21,9 @@ phases:
       - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain test-java-maven-artifact --domain-owner 703671893205 --region us-east-1 --query authorizationToken --output text`
       - echo "Downloading JAR from CodeArtifact"
       - echo "listing..." && ls -ltra
-      - mvn -B dependency:get --settings cicd-project/cicd/docker-app/settings.xml -DrepoUrl=https://test-java-maven-artifact-703671893205.d.codeartifact.us-east-1.amazonaws.com/maven/maven-repo-artifact/ -Dartifact=com.example:$ARTIFACT_NAME:1.0-SNAPSHOT -DoutputDirectory=./ # Replace with your artifact
+      - mvn -B dependency:get --settings cicd-project/cicd/docker-app/settings.xml -DrepoUrl=https://test-java-maven-artifact-703671893205.d.codeartifact.us-east-1.amazonaws.com/maven/maven-repo-artifact/ -Dartifact=com.example:$ARTIFACT_NAME:1.0-SNAPSHOT -DoutputDirectory=$CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/ # Replace with your artifact
       - echo "listing-after-mvn..." && ls -ltra
-      - echo 'running find command' && find / -type f -name "*.jar" -or -name ".*.jar"
+      - echo 'running find command' && find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app
   build:
     commands:
       - cd cicd-project/cicd/docker-app/
