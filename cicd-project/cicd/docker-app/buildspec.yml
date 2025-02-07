@@ -26,6 +26,7 @@ phases:
       - echo 'running find command' && find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app | head -n 1
 #      - cp /codebuild/output/src477026942/src/com/example/custom-java-app/1.0-SNAPSHOT/custom-java-app-1.0-SNAPSHOT.jar  $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/java-artifact.jar
       - cp $(find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app | head -n 1)  $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/java-artifact.jar
+      - echo "running find after cp ..." && ls -ltra $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/ && echo "running find ..." && find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app | head -n 1
   build:
     commands:
       - cd cicd-project/cicd/docker-app/
