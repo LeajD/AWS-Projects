@@ -36,4 +36,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>test-java-maven-artifact-maven-repo-artifact</id> <!-- Repository ID (can be any identifier) -->
+            <url>https://test-java-maven-artifact-703671893205.d.codeartifact.us-east-1.amazonaws.com/maven/maven-repo-artifact/</url> <!-- URL of the repository -->
+        </repository>
+    </distributionManagement>
+
 </project>
