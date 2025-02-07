@@ -42,4 +42,4 @@ phases:
       - ls && find / -name *imagedefinitions* && echo "catting" && cat imagedefinitions.json
 artifacts:
   files:
-    - imagedefinitions.json
+    - /codebuild/output/src3028065180/src/cicd-project/cicd/docker-app/imagedefinitions.json
