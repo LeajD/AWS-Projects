@@ -28,11 +28,11 @@ phases:
       - echo Building the Maven project...
       - ls && pwd && ls cicd-project
       - cd $CODEBUILD_SRC_DIR/cicd-project/cicd/java-app/
-      - mvn clean package --settings settings.xml
+      - mvn clean deploy --settings settings.xml
   post_build:
     commands:
       - echo Build completed.
 
-artifacts:
-  files:
-    - target/*.jar
+#artifacts: #for s3 artifacts
+#  files:
+#    - target/*.jar
