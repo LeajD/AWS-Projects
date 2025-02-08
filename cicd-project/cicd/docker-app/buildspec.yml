@@ -10,7 +10,7 @@ env:
     CODEARTIFACT_REPO: "maven-repo-artifact"
     ARTIFACT_NAME: "custom-java-app"
     #ARTIFACT_VERSION:  
-    DOCKER_IMAGE_VERSION: "greeeeeeeeeeenduble"
+    DOCKER_IMAGE_VERSION: "greeeeeeeeeeenkikowpio"
 phases:
   pre_build:
     commands:
@@ -22,6 +22,7 @@ phases:
       - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain test-java-maven-artifact --domain-owner 703671893205 --region us-east-1 --query authorizationToken --output text`
       - echo "Downloading JAR from CodeArtifact"
       - echo "listing..." && ls -ltra
+      - touch test
       - mvn -B -Dmaven.repo.local=./ dependency:get --settings cicd-project/cicd/docker-app/settings.xml -DrepoUrl=https://test-java-maven-artifact-703671893205.d.codeartifact.us-east-1.amazonaws.com/maven/maven-repo-artifact/ -Dartifact=com.example:$ARTIFACT_NAME:1.0-SNAPSHOT -DoutputDirectory=$CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/ # Replace with your artifact
       - echo "listing-after-mvn..." && ls -ltra
       - echo 'running find command' && find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app | head -n 1
@@ -33,12 +34,14 @@ phases:
       - cd cicd-project/cicd/docker-app/
       - echo Building the Docker image...
       - docker build -t $REPO_NAME .
+      - touch test
       - docker tag $REPO_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:$DOCKER_IMAGE_VERSION
   post_build:
     commands:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:$DOCKER_IMAGE_VERSION
       - cd $CODEBUILD_SRC_DIR
+      - touch test
       - echo Generating imagedefinitions.json...
       - echo '[{"name":"'$REPO_NAME'","imageUri":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com'/'$REPO_NAME':'$DOCKER_IMAGE_VERSION'"}]' > imagedefinitions.json
       - ls && find / -name *imagedefinitions* && echo "catting" && cat imagedefinitions.json
