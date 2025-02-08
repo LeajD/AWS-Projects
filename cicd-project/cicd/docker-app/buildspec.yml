@@ -10,7 +10,7 @@ env:
     CODEARTIFACT_REPO: "maven-repo-artifact"
     ARTIFACT_NAME: "custom-java-app"
     #ARTIFACT_VERSION:  
-    DOCKER_IMAGE_VERSION: "greeeeeeeeeeenkikowpio"
+    DOCKER_IMAGE_VERSION: "greeenkikowpiotwo"
 phases:
   pre_build:
     commands:
