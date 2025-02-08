@@ -43,7 +43,7 @@ phases:
       - echo '[{"name":"'$REPO_NAME'","imageUri":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com'/'$REPO_NAME':'$DOCKER_IMAGE_VERSION'"}]' > imagedefinitions.json
       - ls && find / -name *imagedefinitions* && echo "catting" && cat imagedefinitions.json
       #- cp $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/imagedefinitions.json /imagedefinitions.json
-      - echo 'preparing appspec.yml file' && mv cicd-project/cicd/docker-app/appspec.yml ./appspec.yml
+      - echo 'preparing appspec.yml file' && mv cicd-project/cicd/docker-app/appspec.yml ./appspec.yml && ls && cat ./appspec.yml
 artifacts:
   files:
     - imagedefinitions.json
