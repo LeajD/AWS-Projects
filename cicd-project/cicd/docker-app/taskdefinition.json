@@ -3,14 +3,14 @@
     "containerDefinitions": [
         {
             "name": "my-docker-repo",
-            "image": "703671893205.dkr.ecr.us-east-1.amazonaws.com/my-docker-repo:greeenkikowpionewest", //change this to parameter
+            "image": "703671893205.dkr.ecr.us-east-1.amazonaws.com/my-docker-repo:greeenkikowpionewest",
             "essential": true,
             "portMappings": [
                 {
                     "hostPort": 80,
                     "protocol": "tcp",
                     "containerPort": 80
-                },                
+                }                
             ]
         }
     ],
