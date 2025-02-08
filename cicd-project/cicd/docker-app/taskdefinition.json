@@ -1,0 +1,24 @@
+{
+    "executionRoleArn": "arn:aws:iam::703671893205:role/ecs-task-execution-role",
+    "containerDefinitions": [
+        {
+            "name": "my-docker-repo",
+            "image": "nginx",
+            "essential": true,
+            "portMappings": [
+                {
+                    "hostPort": 80,
+                    "protocol": "tcp",
+                    "containerPort": 80
+                },                
+            ]
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512",
+    "family": "my-ecs-task-bluegreen"
+}
