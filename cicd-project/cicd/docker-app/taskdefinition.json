@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "my-docker-repo",
-            "image": "nginx",
+            "image": "703671893205.dkr.ecr.us-east-1.amazonaws.com/my-docker-repo:greeenkikowpionewest", //change this to parameter
             "essential": true,
             "portMappings": [
                 {
