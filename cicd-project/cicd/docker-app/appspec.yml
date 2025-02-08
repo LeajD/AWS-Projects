@@ -4,7 +4,7 @@ Resources:
       Type: AWS::ECS::Service
       Properties:
         # Note: CodeDeploy overrides the TaskDefinition property using your imagedefinitions.json artifact
-        TaskDefinition: "imagedefinitions.json"
+        TaskDefinition: "taskdefinition.json" #"imagedefinitions.json"
         LoadBalancerInfo:
           ContainerName: "my-docker-repo"  # Must match the container name defined in your task definition
           ContainerPort: 80
