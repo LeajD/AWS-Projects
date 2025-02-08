@@ -22,6 +22,7 @@ phases:
       - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain test-java-maven-artifact --domain-owner 703671893205 --region us-east-1 --query authorizationToken --output text`
       - echo "Downloading JAR from CodeArtifact"
       - echo "listing..." && ls -ltra
+      - touch file #to change docker image at all
       - mvn -B -Dmaven.repo.local=./ dependency:get --settings cicd-project/cicd/docker-app/settings.xml -DrepoUrl=https://test-java-maven-artifact-703671893205.d.codeartifact.us-east-1.amazonaws.com/maven/maven-repo-artifact/ -Dartifact=com.example:$ARTIFACT_NAME:1.0-SNAPSHOT -DoutputDirectory=$CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/ # Replace with your artifact
       - echo "listing-after-mvn..." && ls -ltra
       - echo 'running find command' && find / -type f -name "*.jar" -or -name ".*.jar" | grep custom-java-app | head -n 1
@@ -42,8 +43,8 @@ phases:
       - echo Generating imagedefinitions.json...
       - echo '[{"name":"'$REPO_NAME'","imageUri":"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com'/'$REPO_NAME':'$DOCKER_IMAGE_VERSION'"}]' > imagedefinitions.json
       - sed -i "s|\"image\":\\s*\"[^\"]*\"|\"image\": \"'$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com'/'$REPO_NAME':'$DOCKER_IMAGE_VERSION'\"|g" taskdefinition.json      - ls && find / -name *imagedefinitions* && echo "catting" && cat imagedefinitions.json
-      #- cp $CODEBUILD_SRC_DIR/cicd-project/cicd/docker-app/imagedefinitions.json /imagedefinitions.json
       - echo 'preparing appspec.yml file' && mv cicd-project/cicd/docker-app/appspec.yml ./appspec.yml && ls && cat ./appspec.yml
+      - echo 'preparing taskdefinition.json file' && mv cicd-project/cicd/docker-app/taskdefinition.json ./taskdefinition.json && ls && cat ./taskdefinition.json
 artifacts:
   files:
     - imagedefinitions.json
