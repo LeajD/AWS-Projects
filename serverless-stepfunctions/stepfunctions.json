@@ -1,0 +1,75 @@
+{
+    "Comment": "Data Processing Workflow",
+    "StartAt": "CheckData",
+    "States": {
+      "CheckData": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
+        "Next": "ValidateData"
+      },
+      "ValidateData": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "Variable": "$.isValid",
+            "BooleanEquals": true,
+            "Next": "ProcessData"
+          }
+        ],
+        "Default": "ErrorState"
+      },
+      "ProcessData": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
+        "Next": "CallExternalAPI"
+      },
+      "CallExternalAPI": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
+        "Next": "UpdateDynamoDB"
+      },
+      "UpdateDynamoDB": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
+        "Next": "Notify"
+      },
+      "Notify": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
+        "Next": "Success"
+      },
+      "ErrorState": {
+        "Type": "Fail",
+        "Error": "DataValidationFailed",
+        "Cause": "Data is missing or invalid.",
+        "Next": "NotifyError"
+      },
+      "NotifyError": {
+        "Type": "Task",
+        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
+        "Parameters": {
+          "queueUrl": "${aws_sqs_queue.error_queue_url}",
+          "message": "Data validation failed. Invalid or missing data."
+        },
+        "Next": "PublishErrorSNS"
+      },
+      "PublishErrorSNS": {
+        "Type": "Task",
+        "Resource": "${aws_sns_topic.error_topic_arn}",
+        "Parameters": {
+          "Message": "Error occurred in Step Functions: Data validation failed.",
+          "TopicArn": "${aws_sns_topic.error_topic_arn}"
+        },
+        "Next": "FailState"
+      },
+      "FailState": {
+        "Type": "Fail",
+        "Error": "DataValidationError",
+        "Cause": "Process failed due to invalid data."
+      },
+      "Success": {
+        "Type": "Succeed"
+      }
+    }
+  }
+  

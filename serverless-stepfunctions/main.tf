@@ -1,17 +1,23 @@
-provider "aws" {
-  region = "us-west-2"
+data "terraform_remote_state" "networking" {
+  backend = "local"
+
+  config = {
+    path = "../networking/terraform.tfstate"
+  }
 }
 
+
+
 resource "aws_lambda_function" "data_processor_lambda" {
-  function_name = "DataProcessorLambda"
+  function_name = var.data_processor_lambda
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda_function.handler"
   runtime       = "python3.8"
-  filename      = "lambda_function.zip"  # Upload your Lambda code here
+  filename      = "lambda/${var.data_processor_lambda}.py"  # Upload your Lambda code here
 }
 
 resource "aws_api_gateway_rest_api" "api_gateway" {
-  name        = "StepFunctionsAPI"
+  name        = var.api_gateway
   description = "API Gateway to trigger Step Functions workflow"
 }
 
@@ -28,8 +34,8 @@ resource "aws_api_gateway_method" "method" {
   authorization = "NONE"
 }
 
-resource "aws_dynamodb_table" "dynamo_table" {
-  name           = "DataTable"
+resource "aws_dynamodb_table" "dynamodb_table" {
+  name           = var.dynamodb_table
   hash_key       = "id"
   billing_mode   = "PAY_PER_REQUEST"
   attribute {
@@ -39,25 +45,25 @@ resource "aws_dynamodb_table" "dynamo_table" {
 }
 
 resource "aws_sqs_queue" "sqs_queue" {
-  name = "ErrorQueue"
+  name = var.sqs_queue
 }
 
 resource "aws_sns_topic" "sns_topic" {
-  name = "NotificationTopic"
+  name = var.sns_topic
 }
 
 
 data "template_file" "sfn-definition" {
   #template = jsonencode(yamldecode(file("step-function-definition.yaml")))
-  template = file("step-function-definition.yaml")
+  template = file("${stepfunctions}")
 }
 
 
 resource "aws_stepfunctions_state_machine" "state_machine" { #aws_sfn_state_machine
-  name     = "MyStateMachine"
+  name     = var.state_machine
   role_arn = aws_iam_role.step_function_role.arn
   definition = data.template_file.sfn-definition.rendered
-
+}
 
 resource "aws_api_gateway_integration" "integration" {
   rest_api_id = aws_api_gateway_rest_api.api_gateway.id
