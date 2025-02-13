@@ -1,75 +1,450 @@
 {
-    "Comment": "Data Processing Workflow",
-    "StartAt": "CheckData",
-    "States": {
-      "CheckData": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
-        "Next": "ValidateData"
-      },
-      "ValidateData": {
-        "Type": "Choice",
-        "Choices": [
-          {
-            "Variable": "$.isValid",
-            "BooleanEquals": true,
-            "Next": "ProcessData"
+  "Comment": "Data Processing Workflow",
+  "StartAt": "Check if item exist and is available",
+  "States": {
+    "Check if item exist and is available": {
+      "Type": "Task",
+      "Resource": "${lambda_function_arn}",
+      "ResultPath": "$.lambdaResult",
+      "Next": "ValidateData",
+      "InputPath": "$"
+    },
+    "ValidateData": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.game",
+              "StringEquals": "Path Of Exile 2"
+            },
+            {
+              "Variable": "$.lambdaResult.response",
+              "StringEquals": "In stock"
+            }
+          ],
+          "Next": "Parallel",
+          "Assign": {
+            "variableName.$": "$.game"
           }
-        ],
-        "Default": "ErrorState"
-      },
-      "ProcessData": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
-        "Next": "CallExternalAPI"
-      },
-      "CallExternalAPI": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
-        "Next": "UpdateDynamoDB"
-      },
-      "UpdateDynamoDB": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
-        "Next": "Notify"
-      },
-      "Notify": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
-        "Next": "Success"
-      },
-      "ErrorState": {
-        "Type": "Fail",
-        "Error": "DataValidationFailed",
-        "Cause": "Data is missing or invalid.",
-        "Next": "NotifyError"
-      },
-      "NotifyError": {
-        "Type": "Task",
-        "Resource": "${aws_lambda_function.data_processor_lambda.arn}",
-        "Parameters": {
-          "queueUrl": "${aws_sqs_queue.error_queue_url}",
-          "message": "Data validation failed. Invalid or missing data."
         },
-        "Next": "PublishErrorSNS"
-      },
-      "PublishErrorSNS": {
-        "Type": "Task",
-        "Resource": "${aws_sns_topic.error_topic_arn}",
-        "Parameters": {
-          "Message": "Error occurred in Step Functions: Data validation failed.",
-          "TopicArn": "${aws_sns_topic.error_topic_arn}"
-        },
-        "Next": "FailState"
-      },
-      "FailState": {
-        "Type": "Fail",
-        "Error": "DataValidationError",
-        "Cause": "Process failed due to invalid data."
-      },
-      "Success": {
-        "Type": "Succeed"
+        {
+          "And": [
+            {
+              "Variable": "$.game",
+              "StringEquals": "Diablo 4"
+            },
+            {
+              "Variable": "$.lambdaResult.response",
+              "StringEquals": "In stock"
+            }
+          ],
+          "Next": "Pass"
+        }
+      ],
+      "InputPath": "$",
+      "OutputPath": "$",
+      "Default": "Pass error_info (wrong game)"
+    },
+    "Pass error_info (wrong game)": {
+      "Type": "Pass",
+      "Next": "SQS queue to store unsuccessful transactions 2",
+      "Parameters": {
+        "transactionId.$": "$.transactionId",
+        "user_id.$": "$.user_id",
+        "game.$": "$.game",
+        "item_purchased.$": "$.item_purchased",
+        "payment_details.$": "$.payment_details",
+        "event_timestamp.$": "$.event_timestamp",
+        "server_region.$": "$.server_region",
+        "client_ip.$": "$.client_ip",
+        "error_message": "Ingestion into RDS Failed"
       }
+    },
+    "Pass": {
+      "Type": "Pass",
+      "Next": "update transactional data into rds",
+      "Parameters": {
+        "transactionId.$": "$.transactionId",
+        "user_id.$": "$.user_id",
+        "game.$": "$.game",
+        "item_purchased.$": "$.item_purchased",
+        "payment_details.$": "$.payment_details",
+        "event_timestamp.$": "$.event_timestamp",
+        "server_region.$": "$.server_region",
+        "client_ip.$": "$.client_ip"
+      },
+      "OutputPath": "$"
+    },
+    "Parallel": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "put transaction into production RDS db",
+          "States": {
+            "put transaction into production RDS db": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Parameters": {
+                "Payload.$": "$",
+                "FunctionName": "${rds_lambda_function_arn}"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "Next": "Check lambda status",
+              "InputPath": "$",
+              "ResultPath": "$.lambdaResult"
+            },
+            "Check lambda status": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.lambdaResult.Payload.statusCode",
+                  "NumericEquals": 200,
+                  "Next": "Success"
+                }
+              ],
+              "Default": "add error info",
+              "InputPath": "$",
+              "OutputPath": "$"
+            },
+            "add error info": {
+              "Type": "Pass",
+              "Next": "SQS qeue to store unsuccessfull transactions",
+              "Parameters": {
+                "transactionId.$": "$.transactionId",
+                "user_id.$": "$.user_id",
+                "game.$": "$.game",
+                "item_purchased.$": "$.item_purchased",
+                "payment_details.$": "$.payment_details",
+                "event_timestamp.$": "$.event_timestamp",
+                "server_region.$": "$.server_region",
+                "client_ip.$": "$.client_ip",
+                "error_message": "Ingestion into RDS Failed"
+              }
+            },
+            "Success": {
+              "Type": "Succeed"
+            },
+            "SQS qeue to store unsuccessfull transactions": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sqs:sendMessage",
+              "Parameters": {
+                "MessageBody.$": "$",
+                "QueueUrl": "${sqs_queue_url}"
+              },
+              "Next": "SNS Publish unsuccessful-transaction alert"
+            },
+            "SNS Publish unsuccessful-transaction alert": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sns:publish",
+              "Parameters": {
+                "Message.$": "$",
+                "TopicArn": "${sns_topic_arn}"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "REMOVE PAYMENT DETAILS",
+          "States": {
+            "REMOVE PAYMENT DETAILS": {
+              "Type": "Pass",
+              "Next": "Put JSON data into s3",
+              "Parameters": {
+                "transactionId.$": "$.transactionId",
+                "user_id.$": "$.user_id",
+                "game.$": "$.game",
+                "item_purchased.$": "$.item_purchased",
+                "event_timestamp.$": "$.event_timestamp",
+                "server_region.$": "$.server_region",
+                "client_ip.$": "$.client_ip"
+              }
+            },
+            "Put JSON data into s3": {
+              "Type": "Task",
+              "Parameters": {
+                "Body.$": "$",
+                "Bucket": "gluebucketscript",
+                "Key": "data/TransactionData.json"
+              },
+              "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
+              "Next": "StartCrawler s3-json",
+              "ResultPath": "$",
+              "InputPath": "$"
+            },
+            "StartCrawler s3-json": {
+              "Type": "Task",
+              "Parameters": {
+                "Name": "json-crawler"
+              },
+              "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+              "Next": "GetCrawler-s3json",
+              "InputPath": "$"
+            },
+            "GetCrawler-s3json": {
+              "Type": "Task",
+              "Parameters": {},
+              "Resource": "arn:aws:states:::aws-sdk:glue:getCrawlers",
+              "Next": "is the crawler done",
+              "ResultPath": "$.result",
+              "InputPath": "$"
+            },
+            "is the crawler done": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Or": [
+                    {
+                      "Variable": "$.result.Crawlers[0].State",
+                      "StringEquals": "RUNNING"
+                    },
+                    {
+                      "Variable": "$.result.Crawlers[0].State",
+                      "StringEquals": "STOPPING"
+                    }
+                  ],
+                  "Next": "Wait"
+                },
+                {
+                  "Variable": "$.result.Crawlers[0].State",
+                  "StringEquals": "READY",
+                  "Next": "Glue start redshift ingestion"
+                },
+                {
+                  "Variable": "$.result.Crawlers[0].State",
+                  "StringEquals": "FAILED",
+                  "Next": "Pass  error_info (cant execute crawler)"
+                }
+              ],
+              "Default": "SNS Publish Failure",
+              "InputPath": "$"
+            },
+            "Wait": {
+              "Type": "Wait",
+              "Seconds": 60,
+              "Next": "GetCrawler-s3json"
+            },
+            "Glue start redshift ingestion": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::glue:startJobRun",
+              "Parameters": {
+                "JobName": "glue-redshift-ingest",
+                "Arguments": {
+                  "--input_path": "s3://gluebucketscript/aws-glue-redshift.py"
+                }
+              },
+              "Next": "GetJobRuns status of Redshift ingestion",
+              "ResultPath": "$.lambdaResult"
+            },
+            "GetJobRuns status of Redshift ingestion": {
+              "Type": "Task",
+              "Parameters": {
+                "JobName": "glue-redshift-ingest",
+                "MaxResults": 1
+              },
+              "Resource": "arn:aws:states:::aws-sdk:glue:getJobRuns",
+              "Next": "is the redshift job done",
+              "ResultPath": "$.JobStatus"
+            },
+            "is the redshift job done": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.JobStatus.JobRuns[0].JobRunState",
+                  "StringEquals": "SUCCEEDED",
+                  "Next": "SNS Publish Success"
+                },
+                {
+                  "Variable": "$.JobStatus.JobRuns[0].JobRunState",
+                  "StringEquals": "FAILED",
+                  "Next": "Pass  error_info (cant write to redshift)"
+                },
+                {
+                  "Variable": "$.JobStatus.JobRuns[0].JobRunState",
+                  "StringEquals": "RUNNING",
+                  "Next": "Wait for glue job of Redshift ingestion"
+                }
+              ],
+              "Default": "Pass  error_info (cant write to redshift)"
+            },
+            "SNS Publish Success": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sns:publish",
+              "Parameters": {
+                "Message.$": "$",
+                "TopicArn": "${sns_topic_arn}"
+              },
+              "Next": "Success (2)"
+            },
+            "Success (2)": {
+              "Type": "Succeed"
+            },
+            "Pass  error_info (cant write to redshift)": {
+              "Type": "Pass",
+              "Next": "SQS queue to store unsuccessful transactions 4",
+              "Parameters": {
+                "error_message": "redshift glue failed"
+              }
+            },
+            "SQS queue to store unsuccessful transactions 4": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sqs:sendMessage",
+              "Parameters": {
+                "MessageBody.$": "$",
+                "QueueUrl": "${sqs_queue_url}"
+              },
+              "Next": "SNS Publish Failure"
+            },
+            "SNS Publish Failure": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sns:publish",
+              "Parameters": {
+                "Message.$": "$",
+                "TopicArn": "${sns_topic_arn}"
+              },
+              "End": true
+            },
+            "Wait for glue job of Redshift ingestion": {
+              "Type": "Wait",
+              "Seconds": 60,
+              "Next": "GetJobRuns status of Redshift ingestion"
+            },
+            "Pass  error_info (cant execute crawler)": {
+              "Type": "Pass",
+              "Next": "SQS queue to store unsuccessful transactions 3",
+              "Parameters": {
+                "error_message": "crawler rds failed"
+              }
+            },
+            "SQS queue to store unsuccessful transactions 3": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sqs:sendMessage",
+              "Parameters": {
+                "MessageBody.$": "$",
+                "QueueUrl": "${sqs_queue_url}"
+              },
+              "End": true
+            }
+          }
+        }
+      ],
+      "End": true,
+      "Parameters": {
+        "transactionId.$": "$.transactionId",
+        "user_id.$": "$.user_id",
+        "game.$": "$.game",
+        "item_purchased.$": "$.item_purchased",
+        "payment_details.$": "$.payment_details",
+        "event_timestamp.$": "$.event_timestamp",
+        "server_region.$": "$.server_region",
+        "client_ip.$": "$.client_ip"
+      }
+    },
+    "update transactional data into rds": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${rds_lambda_function_arn}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Choice",
+      "InputPath": "$",
+      "ResultPath": "$.lambdaResult"
+    },
+    "Choice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.lambdaResult.Payload.statusCode",
+          "NumericEquals": 200,
+          "Next": "SNS Publish notification"
+        }
+      ],
+      "InputPath": "$",
+      "Default": "Pass error_info (rds ingest error)"
+    },
+    "Pass error_info (rds ingest error)": {
+      "Type": "Pass",
+      "Next": "SQS queue to store unsuccessful transactions 2",
+      "Parameters": {
+        "transactionId.$": "$.transactionId",
+        "user_id.$": "$.user_id",
+        "game.$": "$.game",
+        "item_purchased.$": "$.item_purchased",
+        "payment_details.$": "$.payment_details",
+        "event_timestamp.$": "$.event_timestamp",
+        "server_region.$": "$.server_region",
+        "client_ip.$": "$.client_ip",
+        "error_message": "Ingestion into RDS Failed"
+      }
+    },
+    "SNS Publish notification": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${sns_topic_arn}",
+        "Message": {
+          "ingestion into rds d4 game success": "yes"
+        }
+      },
+      "Next": "Success (1)"
+    },
+    "Success (1)": {
+      "Type": "Succeed"
+    },
+    "SQS queue to store unsuccessful transactions 2": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "MessageBody.$": "$",
+        "QueueUrl": "${sqs_queue_url}"
+      },
+      "Next": "SNS Publish Failure 3"
+    },
+    "SNS Publish Failure 3": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${sns_topic_arn}",
+        "Message": {
+          "error is:.$": "$.error_message"
+        }
+      },
+      "Next": "FailState",
+      "InputPath": "$"
+    },
+    "FailState": {
+      "Type": "Fail",
+      "Error": "DataValidationError",
+      "Cause": "Process failed due to invalid data."
     }
   }
-  
+}
