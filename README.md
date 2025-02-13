@@ -1,4 +1,5 @@
-# AWS Projects for my DevOps Portfolio (see diagrams in each project dir for quick overview)
+# AWS Projects for my DevOps Portfolio 
+(see visual diagrams in each project dir for quick overview)
 
 # CI-CD on AWS project
 This project implements a comprehensive CI/CD infrastructure on AWS using Infrastructure as Code (Terraform) to orchestrate and manage multiple application pipelines. It supports building, testing, and deploying both Java-based and Docker container–based applications into AWS ECS (using blue/green deployments), as well as provisioning and managing related AWS resources like EKS clusters, ALBs, and IAM roles and policies.
