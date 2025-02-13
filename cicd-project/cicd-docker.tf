@@ -35,8 +35,6 @@ resource "aws_codepipeline" "docker_pipeline" {
       }
     }
   }
-
-
   stage {
     name = "Build"
     action {
@@ -109,21 +107,12 @@ resource "aws_codebuild_project" "docker_build_project" {
     type = "S3"
     location = "my-codebuild-javaartifacts-bucket"
   }
-
   cache {
     type  = "LOCAL"
     modes = ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE"]
   }
 
-  
-
 }
-
-
-
-
-
-
 
 
 # Added CodeDeploy application resource
@@ -131,11 +120,6 @@ resource "aws_codedeploy_app" "docker_codedeploy_app" {
   name              = var.docker_codedeploy_app
   compute_platform  = "ECS"
 }
-
-
-
-
-
 
 #latest docker image: (error if not exist)
 #data "aws_ecr_image" "latest_image_built" {
