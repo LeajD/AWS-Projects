@@ -1,4 +1,8 @@
 # AWS Config recommended rules 
+aws config rules for networks, s3, rds, ec2, root account, codebuild, ecs, dynamodb, glue, sqs, sns, redsfhit, eks, alb, cloudtrail, vpc flow logs and api
+
+![AWS Config diagram](https://d2908q01vomqb2.cloudfront.net/972a67c48192728a34979d9a35164c1295401b71/2020/09/17/AWS-Config-Workflow3.png)
+image URL: https://d2908q01vomqb2.cloudfront.net/972a67c48192728a34979d9a35164c1295401b71/2020/09/17/AWS-Config-Workflow3.png
 
 For CICD-Project:
 - **codebuild-project-artifact-encryption**  
