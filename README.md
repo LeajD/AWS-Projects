@@ -7,6 +7,13 @@ This section provides list of recommended AWS Config rules for each project and 
 
 (see [AWS Config](AWS-Config/)).
 
+# Load-Balancing 
+Simple project to showcases ECS cluster running container tasks exposed via load balancer 443 port using custom CA certificate stored in AWS Private Certificate Authority and custom SSL certificate generated for Load Balancer. Load Balancer of type Application has Web Application Firewall (AWS WAF) and CloudFront distribution enabled custom security group.
+(see [Load-Balancing](Load-Balancing/)).
+
+# Transit-Gateway
+Explaination of inter-VPC and inter-Account traffic routing inside AWS.
+(see [Transit-Gateway](Transit-Gateway/)).
 
 # CI-CD on AWS project
 This project implements a comprehensive CI/CD infrastructure on AWS using Infrastructure as Code (Terraform) to orchestrate and manage multiple application pipelines. It supports building, testing, and deploying both Java-based and Docker container–based applications into AWS ECS (using blue/green deployments), as well as provisioning and managing related AWS resources like EKS clusters, ALBs, and IAM roles and policies.
