@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.ecs_task_execution_role}"
@@ -46,7 +48,7 @@ resource "aws_iam_policy" "codebuild_secrets_manager_policy" {
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ]
-        Resource = "arn:aws:secretsmanager:us-east-1:703671893205:secret:github-cicd-project-FJI72W"
+        Resource = "arn:aws:secretsmanager:us-east-1:${data.aws_caller_identity.current.account_id}:secret:github-cicd-project-FJI72W"
       },
       {
         Effect   = "Allow",
@@ -55,7 +57,7 @@ resource "aws_iam_policy" "codebuild_secrets_manager_policy" {
             "logs:CreateLogStream",
             "logs:PutLogEvents"
         ],
-        Resource  = "arn:aws:logs:${var.AWS_REGION}:${var.AWS_ACCOUNT_ID}:log-group:/aws/codebuild/*"
+        Resource  = "arn:aws:logs:${var.AWS_REGION}:${data.aws_caller_identity.current.account_id}:log-group:/aws/codebuild/*"
       },
       {
         Effect   = "Allow",
@@ -70,7 +72,7 @@ resource "aws_iam_policy" "codebuild_secrets_manager_policy" {
         Action   = [
           "codestar-connections:UseConnection"
         ]
-        Resource = "arn:aws:codeconnections:us-east-1:703671893205:connection/167f271a-6574-4e19-9b52-2e4e3742aac1" #specify here
+        Resource = "arn:aws:codeconnections:${var.AWS_REGION}:${data.aws_caller_identity.current.account_id}:connection/${var.codestar_connection_id}"
       },
 
       {
@@ -91,9 +93,8 @@ resource "aws_iam_policy" "codebuild_secrets_manager_policy" {
           "codeartifact:GetAuthorizationToken"
         ]
         Resource = [
-           "arn:aws:codeartifact:us-east-1:703671893205:domain/test-java-maven-artifact",##/maven-repo-artifact"
-           "arn:aws:codeartifact:us-east-1:703671893205:repository/maven-repo-artifact"##/maven-repo-artifact"
-        #Resource = "${aws_codeartifact_repository.maven-repo-artifact.arn}"
+          "arn:aws:codeartifact:${var.AWS_REGION}:${data.aws_caller_identity.current.account_id}:domain/${var.my_codeartifact_policy}",
+          "arn:aws:codeartifact:${var.AWS_REGION}:${data.aws_caller_identity.current.account_id}:repository/${var.maven-repo-artifact}"
         ]
       },
       {
@@ -261,7 +262,7 @@ resource "aws_iam_policy" "codestar_connections_policy" {
         Action   = [
           "codestar-connections:UseConnection"
         ]
-        Resource = "arn:aws:codeconnections:us-east-1:703671893205:connection/167f271a-6574-4e19-9b52-2e4e3742aac1" #specify here
+        Resource = "arn:aws:codeconnections:${var.AWS_REGION}:${data.aws_caller_identity.current.account_id}:connection/${var.codestar_connection_id}"
       },
       {
         Effect   = "Allow",

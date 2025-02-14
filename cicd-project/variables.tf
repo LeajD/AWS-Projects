@@ -8,7 +8,7 @@ variable "cluster_name" {
 
 variable "AWS_ACCOUNT_ID" {
   description = "The accout id"
-  default     = "703671893205"
+  default     = ""
 }
 
 variable "AWS_REGION" {
@@ -176,7 +176,17 @@ variable "codepipeline_s3_policy" {
   default     = "CodePipelineS3PutObjectPolicy"
 }
 
+variable "maven-repo-artifact" {
+  type        = string
+  description = "maven-repo-artifact name"
+  default     = "maven-repo-artifact"
+}
 
+variable "codestar_connection_id" {
+  type        = string
+  description = "codestar_connection_id name"
+  default     = "SPECIFY" #SPECIFY CODESTAR CONNECTION FOR GITHUB
+}
 variable "codedeploy_role" {
   type        = string
   description = "codedeploy_role name"

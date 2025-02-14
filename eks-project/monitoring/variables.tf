@@ -63,3 +63,58 @@ variable "pending_pods" {
   type        = number
   default     = "1"
 }
+
+
+variable "node_running_pods_alarm_name" {
+  description = "Alarm name for node running pods"
+  type        = string
+  default     = "EKS-NodeRunningPods-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
+
+variable "node_cpu_utilization_alarm_name" {
+  description = "Alarm name for node CPU utilization"
+  type        = string
+  default     = "EKS-NodeCPUUtilization-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
+
+variable "node_memory_utilization_alarm_name" {
+  description = "Alarm name for node memory utilization"
+  type        = string
+  default     = "EKS-NodeMemoryUtilization-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
+
+variable "apiserver_request_duration_alarm_name" {
+  description = "Alarm name for API server request duration"
+  type        = string
+  default     = "EKS-APIServerLatency-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
+
+variable "node_count_alarm_name" {
+  description = "Alarm name for node count"
+  type        = string
+  default     = "EKS-NodeCount-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
+
+variable "network_errors_alarm_name" {
+  description = "Alarm name for network errors"
+  type        = string
+  default     = "EKS-NetworkErrors-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
+
+variable "node_filesystem_utilization_alarm_name" {
+  description = "Alarm name for node filesystem utilization"
+  type        = string
+  default     = "EKS-NodeFilesystemUtilization-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
+
+variable "pod_restart_count_alarm_name" {
+  description = "Alarm name for pod restart count"
+  type        = string
+  default     = "EKS-PodRestartCount-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
+
+variable "pending_pods_alarm_name" {
+  description = "Alarm name for pending pods"
+  type        = string
+  default     = "EKS-PendingPods-${data.terraform_remote_state.eks.outputs.eks_cluster_name}"
+}
