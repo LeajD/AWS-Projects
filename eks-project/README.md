@@ -20,8 +20,7 @@ For outbound internet connectivity (for example, pulling container images or upd
 *VPC Endpoints:*
 AWS VPC endpoints can be configured for services like Amazon S3, ECR, and CloudWatch Logs, allowing secure access from private subnets without routing traffic through the public internet.
 
-- **IAM roles for service accounts (IRSA)**
-
+- **IAM roles for service accounts (IRSA)**  
 IAM Roles for Service Accounts (IRSA) is an AWS feature that allows you to assign IAM roles directly to Kubernetes service accounts in your EKS cluster. This lets your pods assume specific permissions without requiring node-level credentials. This is done via "annotations" eks.amazonaws.com/role-arn: arn:aws:iam::<account-id>:role/<iam-role-name>
 
 
@@ -46,8 +45,7 @@ Monitoring network errors and node count provides insight into the cluster’s o
 Notifications:
 All CloudWatch alarms are configured to trigger actions on an SNS topic. An email subscription (using a notification email defined in variables) ensures that stakeholders are alerted promptly when thresholds are breached.
 
-
-- **Cost Opimization for EKS Clusters:**  
+## Cost Opimization for EKS Clusters:
 Saving Plans
 Utilize AWS Savings Plans for compute services to reduce the cost of EC2 instances running your worker nodes. Savings Plans offer lower rates in exchange for a commitment, which can be beneficial if you have predictable workloads.
 
