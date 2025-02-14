@@ -2,16 +2,22 @@
 ```
 see visual diagrams in each project dir for quick overview
 ```
+# AWS-Config rules recommended for each project 
+This section provides list of recommended AWS Config rules for each project and also general-purpose on network/account level.
+
+(see [AWS Config](AWS-Config/)).
+
+
 # CI-CD on AWS project
 This project implements a comprehensive CI/CD infrastructure on AWS using Infrastructure as Code (Terraform) to orchestrate and manage multiple application pipelines. It supports building, testing, and deploying both Java-based and Docker container–based applications into AWS ECS (using blue/green deployments), as well as provisioning and managing related AWS resources like EKS clusters, ALBs, and IAM roles and policies.
 
 (see [AWS CICD Project](eks-project/)).
 
 
-# Serverless data analytics project
-This project showcases a complete AWS CI/CD solution where an EKS cluster is not only provisioned with Terraform but is also actively monitored for health and performance, ensuring a resilient deployment environment for containerized applications. EKS traffic is exposed via proper Load Balancer on AWS and k8s manifest running inside eks with proper Security Group.
+# EKS project
+This project exemplifies a comprehensive AWS solution focused around provisioning a private, production-ready Kubernetes cluster, configuring a load balancer for external access, and establishing detailed monitoring—come together to deliver a resilient and scalable infrastructure using best practices in Infrastructure as Code.
 
-(see [AWS EKS Project](cicd-project/)).
+(see [AWS EKS Project](eks-project/)).
 
 
 # Serverless data analytics project
