@@ -1,0 +1,43 @@
+#argoCD app for dev for payments app
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payments-dev
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: users=https://703671893205.dkr.ecr.us-east-1.amazonaws.com/users:0.x #docker image
+    argocd-image-updater.argoproj.io/payments.update-strategy: semver #update this application to any latest tag you find in ECR
+    argocd-image-updater.argoproj.io/write-back-method: git #method to write back the updated image tag to the git repository
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io #finalizer to clean up the resources
+spec:
+  destination:
+    namespace: dev
+    server: https://kubernetes.default.svc #to which cluster the app should be deployed, if you want to manage remote k8s cluster connect it and set here 
+  project: default
+  source: 
+    helm:
+      parameters:
+      - name: image.repository
+        value: 703671893205.dkr.ecr.us-east-1.amazonaws.com/users #make sure to update this repo URL with your ECR
+      - name: service.port
+        value: "80"
+      - name: livenessProbe.httpGet.path
+        value: /healthz
+      - name: readinessProbe.httpGet.path
+        value: /healthz
+      - name: image.tag
+        value: 0.1.0
+    path: helm-charts/payments #path in the git repository where the helm chart is present
+    repoURL: git@github.com:AWS-Projects/gitops-merging.git #git repository URL, must match with git-repo-secret git URL
+    targetRevision: main
+  syncPolicy: #policy to not allow empty resources and prune the resources which are not in the git repository
+    automated:
+      allowEmpty: false
+      prune: true
+      selfHeal: true  #self heal the resources if they are deleted, you have to click on sync button in the UI to self heal the resources
+    syncOptions:
+    - Validate=true #validate the resources in yaml before applying, for some types you have to disable it
+    - CreateNamespace=true #create the namespace if it is not present in the cluster
+    - PrunePropagationPolicy=Foreground #prune the resources in the foreground
+    - PruneLast=true #prune the resources which are not in the git repository
