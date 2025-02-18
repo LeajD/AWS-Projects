@@ -12,7 +12,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
   source:
-    path: apps/envs/dev
+    path: gitops-merging/apps/envs/dev #make sure to match git repo dir path
     repoURL: git@github.com:LeajD/AWS-Projects.git
     targetRevision: HEAD
     directory:

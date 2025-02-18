@@ -1,4 +1,4 @@
-#app of apps in argocd for recursive directory 'prod' resources stored in git to deploy in k8s
+#app of apps in argocd for recursive directory  resources stored in git to deploy in k8s
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -12,7 +12,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
   source:
-    path: envs/prod
+    path: gitops-merging/apps/envs/prod #make sure to match git repo dir path
     repoURL: git@github.com:LeajD/AWS-Projects.git
     targetRevision: HEAD
     directory:

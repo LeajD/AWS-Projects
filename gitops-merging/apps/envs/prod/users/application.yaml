@@ -15,7 +15,7 @@ spec:
     helm:
       parameters:
       - name: image.repository
-        value: 703671893205.dkr.ecr.us-east-1.amazonaws.com/users #make sure to update this repo URL with your ECR
+        value: $ID.dkr.ecr.us-east-1.amazonaws.com/users #make sure to update this repo URL with your ECR
       - name: service.port
         value: "8080"
       - name: livenessProbe.httpGet.path
