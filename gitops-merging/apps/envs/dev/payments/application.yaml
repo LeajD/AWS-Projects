@@ -5,7 +5,7 @@ metadata:
   name: payments-dev
   namespace: argocd
   annotations:
-    argocd-image-updater.argoproj.io/image-list: payments=https://703671893205.dkr.ecr.us-east-1.amazonaws.com/payments #docker image
+    argocd-image-updater.argoproj.io/image-list: payments=$ID.dkr.ecr.us-east-1.amazonaws.com/payments #docker image
     argocd-image-updater.argoproj.io/payments.update-strategy: semver #update this application to any latest tag you find in ECR
     argocd-image-updater.argoproj.io/write-back-method: git #method to write back the updated image tag to the git repository
   finalizers:
@@ -19,9 +19,9 @@ spec:
     helm:
       parameters:
       - name: image.repository
-        value: 703671893205.dkr.ecr.us-east-1.amazonaws.com/payments #make sure to update this repo URL with your ECR
+        value: $ID.dkr.ecr.us-east-1.amazonaws.com/payments #make sure to update this repo URL with your ECR
       - name: service.port
-        value: "80"
+        value: "8080"
       - name: livenessProbe.httpGet.path
         value: /healthz
       - name: readinessProbe.httpGet.path
