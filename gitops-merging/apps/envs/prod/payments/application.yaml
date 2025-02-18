@@ -24,7 +24,7 @@ spec:
         value: /healthz
       - name: image.tag
         value: 0.1.0
-    path: apps/helm-charts/payments #path in the git repository where the helm chart is present
+    path: gitops-merging/apps/helm-charts/payments #path in the git repository where the helm chart is present
     repoURL: git@github.com:LeajD/AWS-Projects.git #git repository URL, must match with git-repo-secret git URL
     targetRevision: main
   syncPolicy: #policy to not allow empty resources and prune the resources which are not in the git repository
