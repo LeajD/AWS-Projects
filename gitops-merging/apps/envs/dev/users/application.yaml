@@ -29,7 +29,7 @@ spec:
       - name: image.tag
         value: 0.1.0
     path: helm-charts/users #path in the git repository where the helm chart is present
-    repoURL: git@github.com:AWS-Projects/gitops-merging.git #git repository URL, must match with git-repo-secret git URL
+    repoURL: git@github.com:LeajD/AWS-Projects.git #git repository URL, must match with git-repo-secret git URL
     targetRevision: main
   syncPolicy: #policy to not allow empty resources and prune the resources which are not in the git repository
     automated:
