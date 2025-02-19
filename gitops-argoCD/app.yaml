@@ -1,0 +1,92 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+  namespace: argocd
+spec:
+  destination:
+    namespace: default
+    server: https://EAAEBB42098EC281A1C2F04DAE99C79F.gr7.us-east-1.eks.amazonaws.com
+  project: default
+  source:
+    path: gitops-argoCD/
+    repoURL: https://github.com/LeajD/AWS-Projects.git
+status:
+  controllerNamespace: argocd
+  health:
+    lastTransitionTime: "2025-02-17T10:31:55Z"
+    status: Healthy
+  operationState:
+    finishedAt: "2025-02-17T10:23:40Z"
+    message: successfully synced (all tasks run)
+    operation:
+      initiatedBy:
+        username: admin
+      retry: {}
+      sync:
+        resources:
+        - group: apps
+          kind: Deployment
+          name: nginx-deployment
+          namespace: default
+        revision: 8d90be7135b4fa97a140b3c34c19f9aebc8bc60d
+        syncStrategy:
+          hook: {}
+    phase: Succeeded
+    startedAt: "2025-02-17T10:23:40Z"
+    syncResult:
+      resources:
+      - group: apps
+        hookPhase: Running
+        kind: Deployment
+        message: deployment.apps/nginx-deployment created
+        name: nginx-deployment
+        namespace: default
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      revision: 8d90be7135b4fa97a140b3c34c19f9aebc8bc60d
+      source:
+        path: gitops-argoCD/
+        repoURL: https://github.com/LeajD/AWS-Projects.git
+  reconciledAt: "2025-02-17T10:40:17Z"
+  resources:
+  - group: apps
+    health:
+      status: Healthy
+    kind: Deployment
+    name: nginx-deployment
+    namespace: default
+    status: Synced
+    version: v1
+  - group: eksctl.io
+    health:
+      status: Missing
+    kind: ClusterConfig
+    name: priv-cluster-argocd
+    namespace: default
+    status: OutOfSync
+    version: v1alpha5
+  - group: eksctl.io
+    health:
+      status: Missing
+    kind: ClusterConfig
+    name: prod
+    namespace: default
+    status: OutOfSync
+    version: v1alpha5
+  sourceHydrator: {}
+  sourceType: Directory
+  summary:
+    images:
+    - nginx:latest
+  sync:
+    comparedTo:
+      destination:
+        namespace: default
+        server: https://EAAEBB42098EC281A1C2F04DAE99C79F.gr7.us-east-1.eks.amazonaws.com
+      source:
+        path: gitops-argoCD/
+        repoURL: https://github.com/LeajD/AWS-Projects.git
+    revision: 8d90be7135b4fa97a140b3c34c19f9aebc8bc60d
+    status: OutOfSyn

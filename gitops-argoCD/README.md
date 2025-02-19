@@ -39,3 +39,46 @@ Concept of ArgoCD:
 2. Create ArgoCD github connection:
 3. Create ArgoCD remote-cluster connection:
 3. Create ArgoCD Application:
+
+
+---
+
+aws eks update-kubeconfig --region us-east-1 --name priv-cluster-argocd
+aws eks update-kubeconfig --region us-east-1 --name prod
+aws sts get-caller-identity
+kubectl config get-contexts
+kubectl config use-context arn:aws:eks:us-east-1:703671893205:cluster/priv-cluster-argocd
+kubectl config use-context arn:aws:eks:us-east-1:703671893205:cluster/prod
+
+22kRkYXXUgxq7zhh
+stworzyć drugi klaster w osobnym VPC
+skonfigurować transit gateway między VPC i poprawne "routes" w ramach Transit Gateway route table
+skonfigurować security group dla EKSa żeby zezwalał na ruch z drugiej sieci (i na odwrót) -> tego nie trzeba o ile zezwoli się na poziomie EC2 ...
+... skonfigurować SG na EC2 należących do EKSa żeby zezwalał na ruch z drugiej sieci (i na odwrót)
+... nie działało mi połaczenie na 443 na MASTER NODE'Y IP (bo do nich się łączymy a nie na workery!!!)
+^dlatego trzeba otworzyć SG na ten ruch ale na tych SG przypsianych do EKS!
+...
+dodać w subnetach EC2 (czyli te same co EKS) route na drugą sieć na "target" "Transit Gateway"
+dodać jeszcze VPC endpoint na EKS do obu sieci???
+aws eks update-kubeconfig -> to dodaje context nowy na klaster
+-> ten context używamy potem:
+
+argocd cluster add <remote-cluster-context>
+^to tworzy connection
+ale trzeba się najpierw zalogować:
+argocd login $url:443 --username admin --password $pass
+
+argocd app create my-app \
+  --repo https://github.com/LeajD/AWS-Projects.git \
+  --path apps/my-prod-argocd \
+  --dest-server https://EAAEBB42098EC281A1C2F04DAE99C79F.gr7.us-east-1.eks.amazonaws.com \
+  --dest-namespace default
+^path to ścieżka na gicie do manifestów
+
+argocd app sync my-app --resource apps:Deployment:nginx-deployment
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"
+
++ nat gateway żeby pody (np tego przykladowego nginx'a) pobrały się
+
+
+
