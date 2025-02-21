@@ -1,0 +1,75 @@
+pipeline {
+  agent any
+  
+  environment {
+    AWS_DEFAULT_REGION = "us-east-1"
+    AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
+    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+    GITHUB_REPOSITORY = "LeajD/AWS-Projects"  
+    GITHUB_CREDENTIALS      = "win-ssh"
+    //GITHUB_TOKEN = credentials('github-token')
+    GITHUB_BRANCH = "main"
+  }
+  
+  stages {
+    stage('Checkout') {
+      //when { branch 'ci-apply*' }
+      steps {
+        git url: "https://github.com/${env.GITHUB_REPOSITORY}.git", branch: "${env.GITHUB_BRANCH}", credentialsId: "${env.GITHUB_CREDENTIALS}"
+      }
+    }
+
+    stage('Terraform Validate') {
+      steps {
+        echo "Running Terraform validation..."
+        sh 'python3 python-terraform.py validate'
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'terraform_validate_output.txt', allowEmptyArchive: true
+          archiveArtifacts artifacts: 'terraform_plan.log', allowEmptyArchive: true
+        }
+      }
+    }
+
+    stage('Terraform Plan (PR)') {
+      // Assumes that if CHANGE_ID is set, this build is for a Pull Request.
+      when { expression { env.CHANGE_ID != null } }
+      steps {
+        echo "Detected PR build. Running Terraform plan..."
+        sh 'python3 python-terraform.py plan'
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'terraform_plan_output.txt', allowEmptyArchive: true
+          archiveArtifacts artifacts: 'terraform_plan.log', allowEmptyArchive: true
+        }
+      }
+    }
+    
+    stage('Terraform Apply (Merge)') {
+      // When not a pull request build (merged branch)
+      when { expression { env.CHANGE_ID == null } }
+      steps {
+        echo "Merged PR. Running Terraform apply..."
+        sh 'python3 python-terraform.py apply'
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'terraform_apply_output.txt', allowEmptyArchive: true
+          archiveArtifacts artifacts: 'terraform_plan.log', allowEmptyArchive: true
+        }
+      }
+
+    }
+  }
+  
+  post {
+    failure {
+      echo "Build failed!"
+    }
+    success {
+      echo "Build succeeded!"
+    }
+  }
+}
