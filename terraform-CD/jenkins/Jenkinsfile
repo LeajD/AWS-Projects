@@ -1,5 +1,5 @@
 pipeline {
-  agent any
+  agent { label 'terraform-runner' }
   
   environment {
     AWS_DEFAULT_REGION = "us-east-1"

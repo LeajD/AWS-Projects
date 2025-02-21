@@ -29,3 +29,7 @@ sort -u
 
 
 
+1. deploy infra
+2. go to jenkins and init plugins + ssh-key for git + multibranch pipeline
+3. add agent runner (możliwe że trzeba zmenić reguły SG + wysyłać curl'e na PrivateIP) + nadać opdowiedni label
+4. 
