@@ -6,9 +6,9 @@ from github import Github
 from datetime import datetime
 
 # Configuration (you can specify it locally or in jenins 'env' section)
-GITHUB_TOKEN=os.environ['github_token']
-AWS_ACCESS_KEY_ID=os.environ['aws-access-key-id']
-AWS_SECRET_ACCESS_KEY=os.environ['aws-secret-access-key']
+GITHUB_TOKEN = "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"
+AWS_ACCESS_KEY_ID="AKIA2HVQ47TK25LWLVWG"
+AWS_SECRET_ACCESS_KEY="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"
 
 REPO_NAME = "LeajD/AWS-Projects"
 BASE_BRANCH = "main"
