@@ -6,7 +6,7 @@ from github import Github
 from datetime import datetime
 
 # Configuration (you can specify it locally or in jenins 'env' section)
-GITHUB_TOKEN=os.environ['github_token']
+GITHUB_TOKEN=os.environ['GITHUB_TOKEN']
 AWS_ACCESS_KEY_ID=os.environ['aws-access-key-id']
 AWS_SECRET_ACCESS_KEY=os.environ['aws-secret-access-key']
 
