@@ -32,6 +32,12 @@ def run_terraform_plan(): #validate stage?
     plan_output = subprocess.run(["terraform", "-chdir=terraform-CD/terraform/" , "plan", "-no-color"], capture_output=True, text=True)
     return plan_output.stdout if plan_output.returncode == 0 else plan_output.stderr
 
+def run_terraform_apply():
+    apply_output = subprocess.run(["terraform", "-chdir=terraform-CD/terraform/", "apply", "-auto-approve", "-no-color"],
+                                   capture_output=True, text=True)
+    return apply_output.stdout if apply_output.returncode == 0 else apply_output.stderr
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("action", choices=["plan"], help="Action to perform")
@@ -47,6 +53,11 @@ def main():
         plan_result = run_terraform_plan()
         pr.create_issue_comment(f"### Terraform Plan Results:\n```\n{plan_result}\n```")
         print("Pull request created and plan results commented.")
+    elif args.action == "apply":
+        # Optionally, run init before apply as well.
+        apply_result = run_terraform_apply()
+        print("Terraform apply output:")
+        print(apply_result)
 
 if __name__ == "__main__":
     main()

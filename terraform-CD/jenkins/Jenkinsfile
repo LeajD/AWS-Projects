@@ -21,7 +21,7 @@ pipeline {
     stage('Terraform Plan') {
       steps {
         echo "Running Terraform plan..."
-        sh 'ls && python3 terraform-CD/jenkins/python-terraform.py plan'
+        sh 'python3 terraform-CD/jenkins/python-terraform.py plan'
       }
       post {
         always {
@@ -36,7 +36,7 @@ pipeline {
     when { expression { env.CHANGE_ID == null && env.BRANCH_NAME == "main" } }
       steps {
         echo "Merged PR. Running Terraform apply..."
-        sh 'python3 python-terraform.py apply'
+        sh 'python3 terraform-CD/jenkins/python-terraform.py apply'
       }
       post {
         always {
