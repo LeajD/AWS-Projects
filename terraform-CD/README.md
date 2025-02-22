@@ -30,6 +30,7 @@ sort -u
 
 
 1. deploy infra
-2. go to jenkins and init plugins + ssh-key for git + multibranch pipeline
-3. add agent runner (możliwe że trzeba zmenić reguły SG + wysyłać curl'e na PrivateIP) + nadać opdowiedni label
-4. 
+2. go to jenkins and init plugins + credential ssh-key do gita + multibranch pipeline
+3. add agent runner (możliwe że trzeba zmenić reguły SG + wysyłać curl'e na PrivateIP) + nadać opdowiedni label "terraform-runner" (albo tak nazwać od razu)
+4. dodać key i secret na AWS jako credentials (osobne credentials type "secret text" z ID: 'aws-access-key-id' oraz 'aws-secret-access-key')
+5. 
