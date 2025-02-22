@@ -5,9 +5,6 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags = {
-    Name = "${aws_vpc.main.name}"
-  }
 }
 
 data "aws_caller_identity" "current" {}
@@ -70,9 +67,6 @@ resource "aws_security_group" "db_sg" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
-  tags = {
-    Name = "${aws_internet_gateway.igw.name}"
-  }
 }
 resource "aws_subnet" "public1" {
   vpc_id            = aws_vpc.main.id

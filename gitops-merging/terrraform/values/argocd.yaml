@@ -1,5 +1,0 @@
----
-configs:
-  params:
-    server.insecure: true
-#argocd will not be exposed directly, will secure it via ingress and TLS
