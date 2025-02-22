@@ -32,5 +32,8 @@ sort -u
 1. deploy infra
 2. go to jenkins and init plugins + credential ssh-key do gita + multibranch pipeline
 3. add agent runner (możliwe że trzeba zmenić reguły SG + wysyłać curl'e na PrivateIP) + nadać opdowiedni label "terraform-runner" (albo tak nazwać od razu)
-4. dodać key i secret na AWS jako credentials (osobne credentials type "secret text" z ID: 'aws-access-key-id' oraz 'aws-secret-access-key')
-5. 
+4. dodać key i secret na AWS jako credentials (osobne credentials type "secret text" z ID: 'aws-access-key-id' oraz 'aws-secret-access-key') ->  tegop nie trzxerba, dajemy po prostu IAM role odpowednią
+5. Dostosować ewentualnie środowisko pythona na EC2 worker node
+6. dodajemy nowy resource terraform i pushujemy jako "ci-apply-${date}" commit 
+7. dpodajemy ClouDfonrt (bo inaczej w us-east-1 Jenkins na Ec2 fafatlanie działa na WEB UI)
+8. 
