@@ -10,7 +10,7 @@ GITHUB_TOKEN=os.environ['GITHUB_TOKEN']
 #AWS_ACCESS_KEY_ID=os.environ['aws-access-key-id']
 #AWS_SECRET_ACCESS_KEY=os.environ['aws-secret-access-key']
 
-REPO_NAME = "LeajD/AWS-Projects"
+REPO_NAME = "git@github.com:LeajD/AWS-Projects.git"
 BASE_BRANCH = "main"
 NEW_BRANCH = f"ci-apply-{datetime.now().strftime('%Y-%m-%d')}"
 PR_TITLE = "Automated Terraform PR1 from python"
@@ -21,7 +21,7 @@ def get_latest_commit(repo, branch_name):
     return repo.get_branch(branch_name).commit.sha
 
 #run terraform init
-def run_terraofmr_init():
+def run_terraform_init():
     init_output = subprocess.run(["terraform", "-chdir=../terraform/" , "init", "-no-color"], capture_output=True, text=True)
     return init_output.stdout if init_output.returncode == 0 else init_output.stderr
 
@@ -42,7 +42,7 @@ def main():
 
     if args.action == "plan":
         latest_commit = get_latest_commit(repo, BASE_BRANCH)
-        init_result = run_terraofmr_init()
+        init_result = run_terraform_init()
         pr = create_pr(repo, NEW_BRANCH, BASE_BRANCH, PR_TITLE, PR_BODY)
         plan_result = run_terraform_plan()
         pr.create_issue_comment(f"### Terraform Plan Results:\n```\n{plan_result}\n```")
