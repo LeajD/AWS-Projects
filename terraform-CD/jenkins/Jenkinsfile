@@ -7,6 +7,7 @@ pipeline {
     AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     GITHUB_REPOSITORY = "LeajD/AWS-Projects"  
     GITHUB_CREDENTIALS      = "win-ssh"
+    GITHUB_TOKEN = credentials('github_token')
   }
   
   stages {
@@ -32,7 +33,7 @@ pipeline {
     
     stage('Terraform Apply (Merge)') {
       // When not a pull request build (merged branch)
-      when { expression { env.CHANGE_ID == null } }
+    when { expression { env.CHANGE_ID == null && env.BRANCH_NAME == "main" } }
       steps {
         echo "Merged PR. Running Terraform apply..."
         sh 'python3 python-terraform.py apply'
