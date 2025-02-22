@@ -22,14 +22,14 @@ def get_latest_commit(repo, branch_name):
 
 #run terraform init
 def run_terraform_init():
-    init_output = subprocess.run(["terraform", "-chdir=../terraform/" , "init", "-no-color"], capture_output=True, text=True)
+    init_output = subprocess.run(["terraform", "-chdir=terraform-CD/terraform/" , "init", "-no-color"], capture_output=True, text=True)
     return init_output.stdout if init_output.returncode == 0 else init_output.stderr
 
 def create_pr(repo, branch_name, base_branch, title, body):
     return repo.create_pull(title=title, body=body, head=branch_name, base=base_branch)
 
 def run_terraform_plan(): #validate stage?
-    plan_output = subprocess.run(["terraform", "-chdir=../terraform/" , "plan", "-no-color"], capture_output=True, text=True)
+    plan_output = subprocess.run(["terraform", "-chdir=terraform-CD/terraform/" , "plan", "-no-color"], capture_output=True, text=True)
     return plan_output.stdout if plan_output.returncode == 0 else plan_output.stderr
 
 def main():
