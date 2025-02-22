@@ -22,7 +22,7 @@ pipeline {
     stage('Terraform Validate') {
       steps {
         echo "Running Terraform validation..."
-        sh 'python3 python-terraform.py validate'
+        sh 'ls && python3 terraform-CD/jenkins python-terraform.py validate'
       }
       post {
         always {
