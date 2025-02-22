@@ -35,8 +35,15 @@ pipeline {
       // When not a pull request build (merged branch)
     when { expression { env.CHANGE_ID == null && env.BRANCH_NAME == "main" } }
       steps {
-        echo "Merged PR. Running Terraform apply..."
-        sh 'python3 terraform-CD/jenkins/python-terraform.py apply'
+        timeout(time: 30, unit: 'MINUTES') {
+            //script {
+            //    while (!prMerged()) {
+            //        sleep(60) // Check every minute
+            //    }
+            echo "Merged PR. Running Terraform apply..."
+            sh 'python3 terraform-CD/jenkins/python-terraform.py apply'
+            }
+        }
       }
       post {
         always {
