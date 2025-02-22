@@ -15,3 +15,11 @@ resource "aws_s3_bucket" "example" {
     Environment = "Test"
   }
 }
+
+
+resource "aws_instance" "web3tf" {
+  ami                         = data.aws_ami.amazon_linux_2.id
+  instance_type               = var.web_instance_type
+  subnet_id                   = aws_subnet.public.id
+  vpc_security_group_ids      = [aws_security_group.allow_customip.id]
+}
