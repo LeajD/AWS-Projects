@@ -15,7 +15,7 @@ pipeline {
     stage('Checkout') {
       //when { branch 'ci-apply*' }
       steps {
-        git url: "https://github.com/${env.GITHUB_REPOSITORY}.git", branch: "${env.GITHUB_BRANCH}", credentialsId: "${env.GITHUB_CREDENTIALS}"
+        git url: "git@github.com:${env.GITHUB_REPOSITORY}.git", branch: "${env.GITHUB_BRANCH}", credentialsId: "${env.GITHUB_CREDENTIALS}"
       }
     }
 
