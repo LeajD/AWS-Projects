@@ -10,7 +10,7 @@ GITHUB_TOKEN=os.environ['GITHUB_TOKEN']
 #AWS_ACCESS_KEY_ID=os.environ['aws-access-key-id']
 #AWS_SECRET_ACCESS_KEY=os.environ['aws-secret-access-key']
 
-REPO_NAME = "git@github.com:LeajD/AWS-Projects.git"
+REPO_NAME = "LeajD/AWS-Projects"
 BASE_BRANCH = "main"
 NEW_BRANCH = f"ci-apply-{datetime.now().strftime('%Y-%m-%d')}"
 PR_TITLE = "Automated Terraform PR1 from python"

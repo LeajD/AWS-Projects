@@ -21,7 +21,7 @@ pipeline {
     stage('Terraform Plan') {
       steps {
         echo "Running Terraform plan..."
-        sh 'python3 terraform-CD/jenkins/python-terraform.py plan'
+        sh 'ls && python3 terraform-CD/jenkins/python-terraform.py plan'
       }
       post {
         always {
