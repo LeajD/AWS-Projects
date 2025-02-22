@@ -7,37 +7,20 @@ pipeline {
     AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     GITHUB_REPOSITORY = "LeajD/AWS-Projects"  
     GITHUB_CREDENTIALS      = "win-ssh"
-    //GITHUB_TOKEN = credentials('github-token')
-    GITHUB_BRANCH = "main"
   }
   
   stages {
     stage('Checkout') {
       //when { branch 'ci-apply*' }
       steps {
-        git url: "git@github.com:${env.GITHUB_REPOSITORY}.git", branch: "${env.GITHUB_BRANCH}", credentialsId: "${env.GITHUB_CREDENTIALS}"
+        git url: "git@github.com:${env.GITHUB_REPOSITORY}.git", credentialsId: "${env.GITHUB_CREDENTIALS}"
       }
     }
 
-    stage('Terraform Validate') {
+    stage('Terraform Plan') {
       steps {
-        echo "Running Terraform validation..."
-        sh 'python3 terraform-CD/jenkins/python-terraform.py validate'
-      }
-      post {
-        always {
-          archiveArtifacts artifacts: 'terraform_validate_output.txt', allowEmptyArchive: true
-          archiveArtifacts artifacts: 'terraform_plan.log', allowEmptyArchive: true
-        }
-      }
-    }
-
-    stage('Terraform Plan (PR)') {
-      // Assumes that if CHANGE_ID is set, this build is for a Pull Request.
-      when { expression { env.CHANGE_ID != null } }
-      steps {
-        echo "Detected PR build. Running Terraform plan..."
-        sh 'python3 python-terraform.py plan'
+        echo "Running Terraform plan..."
+        sh 'python3 terraform-CD/jenkins/python-terraform.py plan'
       }
       post {
         always {
