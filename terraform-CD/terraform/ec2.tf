@@ -31,6 +31,9 @@ resource "aws_instance" "web" {
   tags = {
     Name = var.web_instance_name
   }
+  lifecycle {
+    ignore_changes = all
+  }
 
 }
 
@@ -58,6 +61,9 @@ resource "aws_instance" "jenkins-runner" {
 
   tags = {
     Name = var.jenkins_instance_name
+  }
+  lifecycle {
+    ignore_changes = all
   }
 
 }
