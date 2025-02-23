@@ -2,8 +2,8 @@ resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
-resource "aws_s3_bucket" "example2" {
-  bucket = "my-example-bucket2-${random_id.bucket_suffix.hex}"
+resource "aws_s3_bucket" "example3" {
+  bucket = "my-example-bucket3-${random_id.bucket_suffix.hex}"
   acl    = "private"
 
   versioning {

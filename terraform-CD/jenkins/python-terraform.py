@@ -55,6 +55,7 @@ def main():
         print("Pull request created and plan results commented.")
     elif args.action == "apply":
         # Optionally, run init before apply as well.
+        init_result = run_terraform_init()
         apply_result = run_terraform_apply()
         print("Terraform apply output:")
         print(apply_result)
