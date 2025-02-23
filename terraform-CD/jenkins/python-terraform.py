@@ -33,6 +33,7 @@ def run_terraform_plan(): #validate stage?
     return plan_output.stdout if plan_output.returncode == 0 else plan_output.stderr
 
 def run_terraform_apply():
+    init_output = subprocess.run(["terraform", "-chdir=terraform-CD/terraform/" , "init",  "-migrate-state", "-no-color"], capture_output=True, text=True)
     apply_output = subprocess.run(["terraform", "-chdir=terraform-CD/terraform/", "apply", "-auto-approve", "-no-color"],
                                    capture_output=True, text=True)
     return apply_output.stdout if apply_output.returncode == 0 else apply_output.stderr
