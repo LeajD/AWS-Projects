@@ -22,7 +22,7 @@ def get_latest_commit(repo, branch_name):
 
 #run terraform init
 def run_terraform_init():
-    init_output = subprocess.run(["terraform", "-chdir=terraform-CD/terraform/" , "init", "-no-color"], capture_output=True, text=True)
+    init_output = subprocess.run(["terraform", "-chdir=terraform-CD/terraform/" , "init",  "-migrate-state", "-no-color"], capture_output=True, text=True)
     return init_output.stdout if init_output.returncode == 0 else init_output.stderr
 
 def create_pr(repo, branch_name, base_branch, title, body):
