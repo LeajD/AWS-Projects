@@ -43,3 +43,16 @@ resource "aws_s3_bucket" "example5" {
     Environment = "Test"
   }
 }
+resource "aws_s3_bucket" "example6" {
+  bucket = "my-example-bucket6-${random_id.bucket_suffix.hex}"
+  acl    = "private"
+
+  versioning {
+    enabled = false
+  }
+
+  tags = {
+    Name        = "ExampleS4Bucket"
+    Environment = "Test"
+  }
+}
