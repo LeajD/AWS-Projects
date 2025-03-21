@@ -1,0 +1,43 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: payments=703671893205.dkr.ecr.us-east-1.amazonaws.com/payments
+    argocd-image-updater.argoproj.io/payments.update-strategy: semver
+    argocd-image-updater.argoproj.io/write-back-method: git
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  name: payments-dev
+  namespace: argocd
+spec:
+  destination:
+    namespace: dev
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    helm:
+      parameters:
+      - name: image.repository
+        value: 703671893205.dkr.ecr.us-east-1.amazonaws.com/payments
+      - name: service.port
+        value: '8080'
+      - name: livenessProbe.httpGet.path
+        value: /healthz
+      - name: readinessProbe.httpGet.path
+        value: /healthz
+      - name: image.tag
+        value: 0.1.0
+    path: gitops-merging/apps/helm-charts/payments
+    repoURL: git@github.com:LeajD/AWS-Projects.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      allowEmpty: false
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - Validate=true
+    - CreateNamespace=true
+    - PrunePropagationPolicy=Foreground
+    - PruneLast=true
