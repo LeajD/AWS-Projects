@@ -1,0 +1,9 @@
+{
+    "service_name": "my-ecs-service",
+    "version": "1.2.3",
+    "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-ecs-service:1.2.3",
+    "cpu": 256,
+    "memory": 512,
+    "environment": "dev",
+    "desired_count": 3
+}
