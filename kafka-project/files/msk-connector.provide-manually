@@ -1,0 +1,138 @@
+
+resource "aws_mskconnect_connector" "kafka-rds-connector" {
+  name = "kafka-rds-connector"
+
+  kafkaconnect_version = "2.7.1"
+
+  capacity {
+    autoscaling {
+      mcu_count        = 1
+      min_worker_count = 1
+      max_worker_count = 2
+
+      scale_in_policy {
+        cpu_utilization_percentage = 20
+      }
+
+      scale_out_policy {
+        cpu_utilization_percentage = 80
+      }
+    }
+  }
+
+  connector_configuration = merge({
+        "connector.class" = "io.debezium.connector.sqlserver.SqlServerConnector"
+        "tasks.max" = "1"
+    },
+    {
+    # Reads the file content and passes it as a value.
+        "custom.config" = file("../files/kafka_rds_connector")
+    }
+  )
+
+  kafka_cluster {
+    apache_kafka_cluster {
+      bootstrap_servers = aws_msk_cluster.provisioned_cluster.bootstrap_brokers_sasl_iam
+
+      vpc {
+        security_groups = [aws_security_group.db_sg.id]
+        subnets         = [aws_subnet.private.id, aws_subnet.private2.id]
+      }
+    }
+  }
+
+  kafka_cluster_client_authentication {
+    authentication_type = "IAM"
+  }
+
+  kafka_cluster_encryption_in_transit {
+    encryption_type = "TLS"
+  }
+
+  plugin {
+    custom_plugin {
+      arn      = aws_mskconnect_custom_plugin.connector-sqlserver.arn
+      revision = aws_mskconnect_custom_plugin.connector-sqlserver.latest_revision
+    }
+  }
+  log_delivery {
+    worker_log_delivery {
+      cloudwatch_logs {
+        enabled   = true
+        log_group = aws_cloudwatch_log_group.kafka_connect_log_group.name
+      }
+    }
+  }
+  #iam role created in iam.tf file
+  service_execution_role_arn = aws_iam_role.kafka_connect_role.arn
+}
+
+
+resource "aws_mskconnect_connector" "kafka-s3-connector" {
+  name = "kafka-s3-connector"
+
+  kafkaconnect_version = "2.7.1"
+
+  capacity {
+    autoscaling {
+      mcu_count        = 1
+      min_worker_count = 1
+      max_worker_count = 2
+
+      scale_in_policy {
+        cpu_utilization_percentage = 20
+      }
+
+      scale_out_policy {
+        cpu_utilization_percentage = 80
+      }
+    }
+  }
+
+  connector_configuration = merge({
+        "connector.class" = "io.confluent.connect.s3.S3SinkConnector"  
+    },
+    {
+    # Reads the file content and passes it as a value.
+        "custom.config" = file("../files/kafka_s3_connector")
+    }
+  )
+
+  kafka_cluster {
+    apache_kafka_cluster {
+      bootstrap_servers = aws_msk_cluster.provisioned_cluster.bootstrap_brokers_sasl_iam
+
+      vpc {
+        security_groups = [aws_security_group.db_sg.id]
+        subnets         = [aws_subnet.private.id, aws_subnet.private2.id]
+      }
+    }
+  }
+
+  kafka_cluster_client_authentication {
+    authentication_type = "IAM"
+  }
+
+  kafka_cluster_encryption_in_transit {
+    encryption_type = "TLS"
+  }
+
+  plugin {
+    custom_plugin {
+      arn      = aws_mskconnect_custom_plugin.connector-sqlserver.arn
+      revision = aws_mskconnect_custom_plugin.connector-sqlserver.latest_revision
+    }
+  }
+  log_delivery {
+    worker_log_delivery {
+      cloudwatch_logs {
+        enabled   = true
+        log_group = aws_cloudwatch_log_group.kafka_connect_log_group.name
+      }
+    }
+  }
+  #iam role created in iam.tf file
+  service_execution_role_arn = aws_iam_role.kafka_connect_role.arn
+}
+
+

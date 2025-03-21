@@ -1,0 +1,16 @@
+connector.class=io.confluent.connect.s3.S3SinkConnector
+s3.region=us-east-1
+format.class=io.confluent.connect.s3.format.json.JsonFormat
+key.converter=org.apache.kafka.connect.storage.StringConverter
+value.converter=org.apache.kafka.connect.json.JsonConverter
+flush.size=1
+schema.compatibility=NONE
+topics=CDC_DEMO.myapp.dbo.Users
+tasks.max=1
+partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
+storage.class=io.confluent.connect.s3.storage.S3Storage
+s3.bucket.name= #s3 bucket name
+errors.log.include.messages=true
+errors.log.enable=true
+behavior.on.null.values=ignore
+errors.tolerance=all
