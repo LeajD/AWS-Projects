@@ -1,0 +1,16 @@
+#Deploy Network Load Balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb" #Network Load Balancer
+    service.beta.kubernetes.io/aws-load-balancer-security-groups: ${sg_name} #Security Group ID
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: ${service_port}
+      targetPort: ${target_port}
