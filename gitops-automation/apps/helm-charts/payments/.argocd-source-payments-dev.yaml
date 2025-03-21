@@ -1,0 +1,20 @@
+helm:
+  parameters:
+  - name: image.repository
+    value: 703671893205.dkr.ecr.us-east-1.amazonaws.com/payments
+    forcestring: false
+  - name: service.port
+    value: "8080"
+    forcestring: false
+  - name: livenessProbe.httpGet.path
+    value: /healthz
+    forcestring: false
+  - name: readinessProbe.httpGet.path
+    value: /healthz
+    forcestring: false
+  - name: image.tag
+    value: 2.5.0
+    forcestring: true
+  - name: image.name
+    value: 703671893205.dkr.ecr.us-east-1.amazonaws.com/payments
+    forcestring: true

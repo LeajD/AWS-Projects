@@ -1,0 +1,66 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: priv-cluster-argocd
+  region: us-east-1
+  version: "1.31"  # Specify your desired EKS version
+
+iam:
+  withOIDC: true
+
+privateCluster:
+  enabled: true
+  additionalEndpointServices:
+  # For Cluster Autoscaler
+  - "autoscaling"
+  # CloudWatch logging
+  - "logs"
+  #ECR, S3, EC2, STS, ECR, ECR.DKR Endpoints are created automatically for private clusters
+
+vpc:
+  # Create custom subnets if needed; here we define private subnets.
+  subnets:
+    private:
+    #below subnets must have explicit route table, eksctl doesnt modify main route table
+      us-east-1a: { id: subnet-0518bbb3f76ca5d9a }
+      us-east-1b: { id: subnet-04c2e4be2162edacd }
+      us-east-1c: { id: subnet-05063c79e07f10656 }
+  # Disable public endpoint access and enable private endpoint access.
+  #clusterEndpoints:
+  #  publicAccess: false
+  #  privateAccess: true
+accessConfig:
+  bootstrapClusterCreatorAdminPermissions: true #false
+  authenticationMode: API_AND_CONFIG_MAP
+
+CloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+    logRetentionInDays: 7
+
+iamIdentityMappings:
+  - arn: arn:aws:iam::000000000000:user/myUser
+    username: myUser
+    groups:
+      - system:masters
+    noDuplicateARNs: true # prevents shadowing of ARNs
+
+#specify workers (you don't manage masters) nodegroups and settings
+nodeGroups:
+  - name: ng-private
+    labels: { role: workers }
+    instanceType: m5.xlarge
+    desiredCapacity: 3
+    privateNetworking: true
+#  - name: ng-builders
+#    labels: { role: builders }
+#    instanceType: m5.2xlarge
+#    desiredCapacity: 3
+#    privateNetworking: true
+
+addons:
+  - name: vpc-cni
+  - name: kube-proxy
+  - name: coredns
+

@@ -1,0 +1,25 @@
+sudo yum -y install java-11
+
+wget https://archive.apache.org/dist/kafka/3.6.0/kafka_2.13-3.6.0.tgz
+
+tar -xzf kafka_2.13-3.6.0.tgz
+
+
+cd kafka_2.13-3.6.0/libs
+wget https://github.com/aws/aws-msk-iam-auth/releases/download/v1.1.1/aws-msk-iam-auth-1.1.1-all.jar
+
+cd kafka_2.13-3.6.0/bin
+
+vi client.properties
+
+security.protocol=SASL_SSL
+sasl.mechanism=AWS_MSK_IAM
+sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+
+7. 
+bin/kafka-console-consumer.sh --bootstrap-server b-2.mymskcluster.w35awa.c25.kafka.us-east-1.amazonaws.com:9098,b-1.mymskcluster.w35awa.c25.kafka.us-east-1.amazonaws.com:9098 --consumer.config /root/kafka_2.13-3.6.0/bin/client.properties --topic CDC_DEMO.myapp.dbo.Users --from-beginning
+
+
+****Command to create Topic*************
+bin/kafka-topics.sh --create --bootstrap-server <bootstrapServerString> --command-config /home/ec2-user/kafka_2.13-3.6.0/bin/client.properties --replication-factor 3 --partitions 1 --topic MSKTutorialTopic
