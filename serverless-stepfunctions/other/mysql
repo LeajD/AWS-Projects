@@ -1,0 +1,61 @@
+#initialize dynamoDB with such entry:
+"item_name": "Abyssal Wings"
+"stock": 10
+
+"item_name": "Mirror of Kalandra"
+"stock": 5
+
+#If you want to use RDS instead of DynamoDB for storage items stock:
+#initialize RDS table to storing items:
+CREATE TABLE rdstransactions.items (     id INT AUTO_INCREMENT PRIMARY KEY,     name VARCHAR(255) NOT NULL,     stock INT NOT NULL );
+
+#insert items info:
+INSERT INTO rdstransactions.items (name, stock) VALUES ('Abyssal Wings', 10);
+INSERT INTO rdstransactions.items (name, stock) VALUES ('Mirror of Kalandra', 5);
+
+
+
+#initialize RDS table to store transactions data: (via EC2 and mysql command to connect to  private RDS)
+CREATE TABLE rdstransactions.orders (
+    transaction_id VARCHAR(50) PRIMARY KEY,
+    user_id VARCHAR(100),
+    game VARCHAR(100),
+    item_id VARCHAR(100),
+    item_name VARCHAR(255),
+    item_type VARCHAR(50),
+    price_currency VARCHAR(10),
+    price_amount DECIMAL(10,2),
+    payment_method VARCHAR(50),
+    transaction_status VARCHAR(50),
+    gateway VARCHAR(50),
+    event_timestamp DATETIME,
+    server_region VARCHAR(50),
+    client_ip VARCHAR(15)
+) ;
+
+
+#inserting new transactions data is done via lambda function
+
+{ 
+    "transactionId": "1",
+    "user_id": "user_987654321",
+    "game": "Path Of Exile 2",
+    "item_purchased": {
+        "item_id": "mtx_abyssal_wings",
+        "item_name": "Abyssal Wings",
+        "item_type": "cosmetic",
+        "price": {
+            "currency": "USD",
+             "amount": 10
+            }
+        },
+    "payment_details": {
+        "payment_method": "credit_card",
+        "card_last4": "1234",
+        "transaction_status": "pending",
+        "gateway": "Stripe"
+    },
+    "event_timestamp": "2025-02-09T12:34:56Z",
+    "server_region": "EU-West",
+    "client_ip": "192.168.1.1"
+}

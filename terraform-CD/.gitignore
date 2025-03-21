@@ -1,0 +1,11 @@
+<<<<<<< HEAD
+terraform/venv
+terraform/.terraform
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup  
+=======
+.terraform*
+terraform.tf*
+terraform/python-tf.py
+terraform/venv
+>>>>>>> 33f54379cc5c2cd306be22931b02fdf8765662a4

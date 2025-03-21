@@ -1,0 +1,53 @@
+connector.class=io.debezium.connector.sqlserver.SqlServerConnector
+tasks.max=1
+database.history.consumer.sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+database.history.consumer.sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+database.history.consumer.security.protocol=SASL_SSL
+
+
+
+database.history.producer.sasl.mechanism=AWS_MSK_IAM
+database.history.producer.sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+database.history.producer.sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+database.history.producer.security.protocol=SASL_SSL
+
+database.history.sasl.mechanism=AWS_MSK_IAM
+database.history.sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+database.history.sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+database.history.security.protocol=SASL_SSL
+database.history.consumer.sasl.mechanism=AWS_MSK_IAM
+
+database.encrypt=false
+database.port=1433
+database.names=myapp
+database.hostname= #RDS endpoint
+database.user= #    RDS username
+database.password= #RDS password
+table.include.list=dbo.Users
+schema.include.list=dbo
+
+
+value.converter=org.apache.kafka.connect.json.JsonConverter
+key.converter=org.apache.kafka.connect.storage.StringConverter
+
+topic.prefix=CDC_DEMO
+database.server.name=CDC_DEMO
+topic.creation.default.partitions=1
+topic.creation.default.replication.factor=2
+topic.creation.default.max.message.bytes=20971520
+topic.creation.default.retention.ms=2592000000
+topic.creation.default.compression.type=snappy
+topic.creation.default.cleanup.policy=delete
+
+
+schema.history.internal.kafka.topic=schemahistory.DEMO_APP
+
+schema.history.internal.kafka.bootstrap.servers= #bootstrap server
+schema.history.internal.consumer.sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+schema.history.internal.consumer.sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+schema.history.internal.consumer.security.protocol=SASL_SSL
+schema.history.internal.consumer.sasl.mechanism=AWS_MSK_IAM
+schema.history.internal.producer.sasl.client.callback.handler.class=software.amazon.msk.auth.iam.IAMClientCallbackHandler
+schema.history.internal.producer.sasl.jaas.config=software.amazon.msk.auth.iam.IAMLoginModule required;
+schema.history.internal.producer.security.protocol=SASL_SSL
+schema.history.internal.producer.sasl.mechanism=AWS_MSK_IAM
